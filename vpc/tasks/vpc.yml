@@ -1,0 +1,31 @@
+---
+# Ensure that you do not use the tag "Environment" as its a reserved word.
+# I have used "Env" instead
+
+- name: Creating VPC to host Mysql servers
+  local_action: 
+    module: ec2_vpc
+    region: "{{ vpc_region }}"
+    state: present
+    cidr_block: "{{ vpc_cidr_block }}"
+    resource_tags: {"Name":"{{ vpc_name }}", "Env":"{{ env }}"}  
+    subnets: "{{ vpc_subnets }}" 
+    internet_gateway: yes
+    route_tables: "{{ subnet_routes }}"
+  register: vpc
+
+- name: Saving VPC id
+  shell: echo "{{ vpc.vpc_id }}" > "{{ vpc_name }}_info.yml"
+  args:
+    chdir: vpc/vars/
+
+- name: Saving Subnet id
+  shell: echo "{{ item.id }}" > "{{ item.resource_tags.Name }}_info.yml"
+  args:
+    chdir: vpc/vars/
+  with_items: vpc.subnets
+
+- name: Saving Subnet and VPC ids as facts
+  set_fact:
+    vpc_id: "{{ lookup('file', 'vpc/vars/' + vpc_name + '_info.yml') }}"
+    vpc_subnet: "{{ lookup('file', 'vpc/vars/' + subnet_name + '_info.yml') }}"

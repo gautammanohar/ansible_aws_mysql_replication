@@ -1,0 +1,23 @@
+---
+  # VPC Vars
+  env: staging  
+  vpc_name: staging_vpc
+  vpc_region: us-west-2
+  vpc_cidr_block: 10.0.0.0/16
+  subnet_az: "{{ vpc_region }}a"
+  subnet_cidr: 10.0.0.0/24
+  subnet_name: mysql_subnet
+  subnet_tier: DB
+  subnet_resource_tags: 
+  vpc_subnets:
+    - cidr: "{{ subnet_cidr }}"
+      az: "{{ subnet_az }}"
+      resource_tags: { "Name":"{{ subnet_name }}","Env":"{{ env }}","Tier":"{{ subnet_tier }}" }
+      internet_gateway: True
+
+  subnet_routes:
+    - subnets:
+        - "{{ subnet_cidr }}"
+      routes:
+        - dest: 0.0.0.0/0
+          gw: igw
