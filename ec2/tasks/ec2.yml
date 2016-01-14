@@ -1,0 +1,17 @@
+---
+- name: Create the Mysql Instance(s)
+  local_action:
+    module: ec2
+    region: "{{ vpc_region }}"
+    group: "{{ mysql_security_groups[0].sg_name }}"
+    keypair: "{{ key_name }}"
+    instance_type: "{{ mysql_instance_type }}"
+    image: "{{ ami_id }}"
+    vpc_subnet_id: "{{ vpc_subnet_id }}"
+    assign_public_ip: False
+    wait: True
+    wait_timeout: 600
+    instance_tags:
+      Name: "master_1"
+      Env: "{{ env }}"
+  register: mysql_master_1

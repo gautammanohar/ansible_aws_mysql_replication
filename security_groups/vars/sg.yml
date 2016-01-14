@@ -1,9 +1,5 @@
 ---
-  # EC2 Instance vars
-  # Here I am using the ami id "ami-5189a661"
-  # Ubuntu Server 14.04 LTS (HVM), SSD Volume Type 64 bit
-  ami_id: ami-5189a661 
-  mysql_instance_type: t2.micro
+  # Security Group vars
   mysql_security_groups:
     - sg_name: mysql-sg
       sg_description: Security group for Mysql instances

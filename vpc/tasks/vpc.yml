@@ -5,27 +5,44 @@
 - name: Creating VPC to host Mysql servers
   local_action: 
     module: ec2_vpc
-    region: "{{ vpc_region }}"
+    region: "{{ item.region }}"
     state: present
-    cidr_block: "{{ vpc_cidr_block }}"
-    resource_tags: {"Name":"{{ vpc_name }}", "Env":"{{ env }}"}  
-    subnets: "{{ vpc_subnets }}" 
+    cidr_block: "{{ item.cidr }}/16"
+    resource_tags: {"Name":"{{ item.location }}_mysql_vpc_y", "Env":"{{ env }}"}  
+    subnets:
+      - cidr: "{{ item.cidr }}/24"
+        az: "{{ item.region }}a"
+        resource_tags: { "Name":"{{ subnet_name }}","Env":"{{ env }}","Tier":"{{ subnet_tier }}" }
+        internet_gateway: True 
     internet_gateway: yes
-    route_tables: "{{ subnet_routes }}"
-  register: vpc
+    route_tables: 
+      - subnets:
+          - "{{ item.cidr }}/24"
+        routes:
+          - dest: 0.0.0.0/0
+            gw: igw
+  register: "vpc"
+  with_items: 
+    - "{{ mysql_vpcs }}"
 
-- name: Saving VPC id
-  shell: echo "{{ vpc.vpc_id }}" > "{{ vpc_name }}_info.yml"
+- debug: var=vpc
+
+- name: Saving VPC ids
+  shell: echo "{{ item.vpc_id }}" > "{{ item.vpc.region }}-vpc-info.yml"
   args:
     chdir: vpc/vars/
+  with_items: 
+    - "{{ vpc.results }}"
+  
 
 - name: Saving Subnet id
-  shell: echo "{{ item.id }}" > "{{ item.resource_tags.Name }}_info.yml"
+  shell: echo "{{ item.subnets[0].id }}" > "{{ item.vpc.region }}-subnet-info.yml"
   args:
     chdir: vpc/vars/
-  with_items: vpc.subnets
+  with_items: 
+    "{{ vpc.results }}"
 
-- name: Saving Subnet and VPC ids as facts
-  set_fact:
-    vpc_id: "{{ lookup('file', 'vpc/vars/' + vpc_name + '_info.yml') }}"
-    vpc_subnet: "{{ lookup('file', 'vpc/vars/' + subnet_name + '_info.yml') }}"
+#- name: Saving Subnet and VPC ids as facts
+#  set_fact:
+#    vpc_id: "{{ lookup('file', 'vpc/vars/' + vpc_name + '_info.yml') }}"
+#    vpc_subnet_id: "{{ lookup('file', 'vpc/vars/' + subnet_name + '_info.yml') }}"
