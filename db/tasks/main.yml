@@ -1,0 +1,24 @@
+---
+- name: Ensure MySQL Python libraries are installed.
+  apt: "name=python-mysqldb state=installed"
+
+- name: Ensure MySQL packages are installed.
+  apt: "name={{ item }} state=installed"
+  with_items:
+    - mysql-common
+    - mysql-server
+    - mysql-client    
+
+- name: Setting mysql root password
+  mysql_user:
+    name=root
+    host={{ item }}
+    password="rootpass"
+  with_items:
+    - "{{ ansible_hostname }}"
+    - 127.0.0.1
+    - ::1
+    - localhost
+
+- name: Removing bind address constraint        
+  replace: dest=/etc/mysql/my.cnf regexp='bind-address' replace='#bind-address'

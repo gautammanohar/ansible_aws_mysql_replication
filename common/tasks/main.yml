@@ -1,0 +1,8 @@
+---
+ - name: Updating Repositories
+   apt: 
+     update_cache: yes
+
+ - name: Upgrading
+   apt: 
+     upgrade: safe

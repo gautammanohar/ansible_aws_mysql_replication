@@ -12,3 +12,10 @@
     - include: ec2/tasks/ec2.yml               # Create the required EC2 Instances
 
 
+- hosts: mysql
+  sudo: True 
+  remote_user: ubuntu
+  gather_facts: True
+  roles:
+    - common
+    - db
