@@ -1,15 +1,12 @@
 ---
   # Security Group vars
-  mysql_security_groups:
-    - sg_name: mysql-sg
-      sg_description: Security group for Mysql instances
-      sg_rules:
-        - proto: tcp
-          from_port: 22
-          to_port: 22
-          cidr_ip: 0.0.0.0/0
-        - proto: tcp
-          from_port: 3306
-          to_port: 3306
-          cidr_ip: 0.0.0.0/0
+  sg_rules:
+    - proto: tcp
+      from_port: 22
+      to_port: 22
+      cidr_ip: 0.0.0.0/0
+    - proto: tcp
+      from_port: 3306
+      to_port: 3306
+      cidr_ip: 0.0.0.0/0
          

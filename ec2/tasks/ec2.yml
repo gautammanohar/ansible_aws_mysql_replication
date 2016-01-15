@@ -2,16 +2,21 @@
 - name: Create the Mysql Instance(s)
   local_action:
     module: ec2
-    region: "{{ vpc_region }}"
-    group: "{{ mysql_security_groups[0].sg_name }}"
-    keypair: "{{ key_name }}"
+    region: "{{ item.region }}"
+    group: "{{ item.location }}-mysql-sg"
+    keypair: "ansible-{{ item.location }}-keypair"
     instance_type: "{{ mysql_instance_type }}"
-    image: "{{ ami_id }}"
-    vpc_subnet_id: "{{ vpc_subnet_id }}"
-    assign_public_ip: False
+    image: "{{ item.ami }}"
+    vpc_subnet_id: "{{ lookup('file', 'vpc/vars/' + item.region + '-subnet-info.yml') }}"
+    assign_public_ip: True
     wait: True
     wait_timeout: 600
     instance_tags:
-      Name: "master_1"
+      Name: "master_{{ item.location }}"
       Env: "{{ env }}"
-  register: mysql_master_1
+  register: mysql_master
+  with_items: 
+    - "{{ mysql_vpcs }}"
+
+- debug: var=mysql_master
+

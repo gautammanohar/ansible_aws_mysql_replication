@@ -8,7 +8,7 @@
     - ec2/vars/ec2.yml                         # EC2 related variables
   tasks:
     - include: vpc/tasks/vpc.yml               # Prepare the VPC's
-    #- include: security_groups/tasks/sg.yml    # Create the required Security groups
-    #- include: ec2/tasks/ec2.yml               # Create the required EC2 Instances
+    - include: security_groups/tasks/sg.yml    # Create the required Security groups
+    - include: ec2/tasks/ec2.yml               # Create the required EC2 Instances
 
 

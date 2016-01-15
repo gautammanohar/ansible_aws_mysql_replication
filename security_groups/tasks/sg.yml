@@ -3,11 +3,20 @@
 - name: Creating Mysql server security group
   local_action:
     module: ec2_group
-    name: "{{ item.sg_name }}"
-    description: "{{ item.sg_description }}"
-    region: "{{ vpc_region }}" # Change the AWS region here
-    vpc_id: "{{ vpc.vpc_id }}" # vpc is the resgister name, you can also set it manually
+    name: "{{ item.location }}-mysql-sg"
+    description: "Mysql master security group"
+    region: "{{ item.region }}" 
+    vpc_id: "{{ lookup('file', 'vpc/vars/' + item.region + '-vpc-info.yml') }}"
     state: present
-    rules: "{{ item.sg_rules }}"
-  with_items: mysql_security_groups
-  register: mysql_sg
+    rules: "{{ sg_rules }}"
+  register: mysql_sg         
+  with_items: 
+    - "{{ mysql_vpcs }}"
+
+
+- name: Saving Security group ids
+  shell: echo "{{ item.group_id }}" > "{{ item.invocation.module_complex_args.region }}-sg-info.yml"
+  args:
+    chdir: security_groups/vars/
+  with_items: 
+    - "{{ mysql_sg.results }}"

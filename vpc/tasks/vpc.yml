@@ -8,7 +8,7 @@
     region: "{{ item.region }}"
     state: present
     cidr_block: "{{ item.cidr }}/16"
-    resource_tags: {"Name":"{{ item.location }}_mysql_vpc_y", "Env":"{{ env }}"}  
+    resource_tags: {"Name":"{{ item.location }}_mysql_vpc", "Env":"{{ env }}"}  
     subnets:
       - cidr: "{{ item.cidr }}/24"
         az: "{{ item.region }}a"
@@ -25,7 +25,7 @@
   with_items: 
     - "{{ mysql_vpcs }}"
 
-- debug: var=vpc
+
 
 - name: Saving VPC ids
   shell: echo "{{ item.vpc_id }}" > "{{ item.vpc.region }}-vpc-info.yml"

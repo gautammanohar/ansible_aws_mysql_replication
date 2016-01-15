@@ -1,9 +1,9 @@
 ---
   # VPC Vars
   mysql_vpcs:
-    - { region: "us-west-2", location: "oregon", cidr: "10.0.0.0"}
-    - { region: "eu-west-1", location: "ireland", cidr: "11.0.0.0"}
-    #- { region: "ap-southeast-1", location: "singapore", cidr: "12.0.0.0"}
+    - { region: "us-west-2", location: "oregon", cidr: "10.0.0.0", ami: "ami-5189a661" }
+    - { region: "eu-west-1", location: "ireland", cidr: "11.0.0.0", ami: "ami-47a23a30" }
+    #- { region: "ap-southeast-1", location: "singapore", cidr: "12.0.0.0", ami:"ami-96f1c1c4" }
 
   env: staging  
   vpc_name: staging_vpc
@@ -14,15 +14,4 @@
   subnet_name: mysql_subnet
   subnet_tier: DB
   subnet_resource_tags: 
-  vpc_subnets:
-    - cidr: "{{ subnet_cidr }}"
-      az: "{{ subnet_az }}"
-      resource_tags: { "Name":"{{ subnet_name }}","Env":"{{ env }}","Tier":"{{ subnet_tier }}" }
-      internet_gateway: True
 
-  subnet_routes:
-    - subnets:
-        - "{{ subnet_cidr }}"
-      routes:
-        - dest: 0.0.0.0/0
-          gw: igw
