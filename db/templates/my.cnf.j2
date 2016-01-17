@@ -88,6 +88,9 @@ log_error = /var/log/mysql/error.log
 #log_bin			= /var/log/mysql/mysql-bin.log
 
 server-id = {{ mysql_server_id.stdout }}
+replicate-same-server-id = 0
+auto-increment-increment = {{ slave_maps | length }}
+auto-increment-offset = {{ master_offset }}
 log-bin = /var/log/mysql/mysql-bin.log
 
 expire_logs_days	= 10
@@ -98,6 +101,8 @@ max_binlog_size         = 100M
 binlog-do-db = {{ replicate_database }}
 {% endfor -%}
 
+# log slave updates for circular replication
+log-slave-updates
 
 #binlog_ignore_db	= include_database_name
 #

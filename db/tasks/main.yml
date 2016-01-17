@@ -12,7 +12,7 @@
 
 - name: Creating replication user
   mysql_user:
-    name="slaveuser"
+    name="{{ slave_maps[host_location] }}_slave"
     password="slavepass"
     host="%"
     priv=*.*:"REPLICATION SLAVE"
@@ -36,6 +36,12 @@
     hostname -I | sed -e 's/ /\n/' | grep -v '^$' | tail -1 | awk -F. '{print $3 * 256 + $4}'
   changed_when: False
   register: mysql_server_id
+
+
+- name: Setting master Offset 
+  set_fact:
+    master_offset: "{{ offset_maps[host_location] }}"
+
 
 - name: put my.cnf
   template:
@@ -63,7 +69,7 @@
   mysql_replication:
     mode: changemaster
     master_host: "{{ master_ip }}"
-    master_user: "slaveuser"
+    master_user: "{{ host_location }}_slave"
     master_password: "slavepass"
     master_log_file: "{{ master_status.File }}"
     master_log_pos: "{{ master_status.Position }}"
@@ -72,4 +78,4 @@
   ignore_errors: True
 
 - name: Start replication.
-  mysql_replication: mode=startslave
+  mysql_replication: mode=startslave login_user=root login_password="rootpass"

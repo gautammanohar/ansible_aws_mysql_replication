@@ -2,10 +2,10 @@
 - hosts: localhost
   connection: local
   gather_facts: False
-  vars_files:
-    - vpc/vars/vpc.yml                         # VPC related variables
-    - security_groups/vars/sg.yml              # Security Group related variables
-    - ec2/vars/ec2.yml                         # EC2 related variables
+  #vars_files:
+  #  - vpc/vars/vpc.yml                         # VPC related variables
+  #  - security_groups/vars/sg.yml              # Security Group related variables
+  #  - ec2/vars/ec2.yml                         # EC2 related variables
   tasks:
     - include: vpc/tasks/vpc.yml               # Prepare the VPC's
     - include: security_groups/tasks/sg.yml    # Create the required Security groups
@@ -19,4 +19,3 @@
   roles:
     - common
     - db
-    #- slave

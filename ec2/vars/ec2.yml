@@ -1,8 +1,0 @@
----
-  # EC2 Instance vars
-  # Here I am using the ami id "ami-5189a661"
-  # Ubuntu Server 14.04 LTS (HVM), SSD Volume Type 64 bit
-  ami_id: ami-5189a661 
-  mysql_instance_type: t2.micro
-  key_name: "ansible-keypair"
-  ssh_key_location: ~/.ssh/id_rsa.pub 
