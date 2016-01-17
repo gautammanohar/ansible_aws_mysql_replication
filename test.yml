@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: False
+  vars_files:
+    - vpc/vars/vpc.yml                         # VPC related variables
+    - security_groups/vars/sg.yml              # Security Group related variables
+    - ec2/vars/ec2.yml                         # EC2 related variables
+  tasks:
+    - include: vpc/tasks/test.yml               # Prepare the VPC's

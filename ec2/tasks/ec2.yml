@@ -39,8 +39,17 @@
 - name: Adding SSH group
   add_host: 
     hostname: "master_{{ item.item.location }}"
+    host_location: "{{ item.item.location }}"
     ansible_ssh_private_key_file: "/etc/ansible/keys/ansible-{{ item.item.location }}-keypair.pem"
-    ansible_ssh_host: "{{ item.instances[0].public_ip }}"
+    ansible_ssh_host: "{{ item.instances[0].public_ip }}"       
     groupname: mysql
   with_items: 
    - "{{ mysql_master.results }}"
+
+
+- name: Adding the master details
+  shell: echo "{{ item.instances[0].public_ip }}" > "master_of_{{ slave_maps[item.item.location] }}"
+  args:
+    chdir: db/vars/
+  with_items:
+    - "{{ mysql_master.results }}"   

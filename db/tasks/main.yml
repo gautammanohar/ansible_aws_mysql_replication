@@ -9,6 +9,16 @@
     - mysql-server
     - mysql-client    
 
+
+- name: Creating replication user
+  mysql_user:
+    name="slaveuser"
+    password="slavepass"
+    host="%"
+    priv=*.*:"REPLICATION SLAVE"
+    state=present
+
+
 - name: Setting mysql root password
   mysql_user:
     name=root
@@ -20,5 +30,46 @@
     - ::1
     - localhost
 
-- name: Removing bind address constraint        
-  replace: dest=/etc/mysql/my.cnf regexp='bind-address' replace='#bind-address'
+
+- name: generate server-id
+  shell:
+    hostname -I | sed -e 's/ /\n/' | grep -v '^$' | tail -1 | awk -F. '{print $3 * 256 + $4}'
+  changed_when: False
+  register: mysql_server_id
+
+- name: put my.cnf
+  template:
+    src=my.cnf.j2
+    dest=/etc/mysql/my.cnf
+    backup=yes
+  register: last_result
+
+- name: restart mysql
+  service:
+    name=mysql
+    state=restarted
+  when: last_result.changed
+
+- name: Check master replication status.
+  mysql_replication: mode=getmaster login_user=root login_password="rootpass"
+  register: master_status
+
+- name: Setting master IP 
+  set_fact:
+    master_ip: "{{ lookup('file', 'db/vars/master_of_' + host_location) }}"
+
+
+- name: Configure replication on the slave.
+  mysql_replication:
+    mode: changemaster
+    master_host: "{{ master_ip }}"
+    master_user: "slaveuser"
+    master_password: "slavepass"
+    master_log_file: "{{ master_status.File }}"
+    master_log_pos: "{{ master_status.Position }}"
+    login_user: root
+    login_password: "rootpass"
+  ignore_errors: True
+
+- name: Start replication.
+  mysql_replication: mode=startslave

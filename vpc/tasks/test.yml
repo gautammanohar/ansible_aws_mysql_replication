@@ -1,0 +1,4 @@
+---
+- debug: msg="{{ master_maps['oregon'] }}"
+  with_items:
+    - "{{ mysql_vp}}"

@@ -19,3 +19,4 @@
   roles:
     - common
     - db
+    #- slave
