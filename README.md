@@ -15,3 +15,14 @@ This playbook attempts to achieve the following :
 ```sh
 $ ansible-playbook provisioner.yml
 ```
+
+### Master/Slave maps.
+As the heading suggests, this playbook implements circular replication. Therefore each master is also a slave of another master. In group_vars/all, attention should be paid to the slave_maps dict. For instance this dict :
+```sh
+slave_maps:
+  oregon: ireland
+  ireland: singapore
+  singapore: oregon
+
+```
+suggests that the instance in Oregon is the master of the instance in Ireland, one in Ireland is the master of Singapore and finally , instance in Singapore is the master of the instance in Oregon.
