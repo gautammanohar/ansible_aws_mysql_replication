@@ -26,3 +26,6 @@ slave_maps:
 
 ```
 suggests that the instance in Oregon is the master of the instance in Ireland, one in Ireland is the master of Singapore and finally , instance in Singapore is the master of the instance in Oregon.
+
+
+This playbook can manage 3+ masters given that the **slave_maps** is correctly set.
